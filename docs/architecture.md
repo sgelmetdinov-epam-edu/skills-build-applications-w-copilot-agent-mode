@@ -30,20 +30,22 @@ OctoFit Tracker is a three-tier application for a school fitness program. The st
 
 Record your plan here before editing code.
 
-- Presentation tier decision:
-- Logic tier decision:
-- Data tier decision:
-- Activity tracking approach:
-- Team management approach:
-- Leaderboard approach:
-- Workout suggestions approach:
+- Presentation tier decision: Use the shared API client from each capability view and expose accessible loading, empty, and error states.
+- Logic tier decision: Keep Express routes thin; validate inputs and implement business behavior in service functions with deliberate 4xx errors.
+- Data tier decision: Enforce required fields in Mongoose schemas and keep the seed idempotent without clearing application data.
+- Activity tracking approach: Validate user/team IDs and references before writing; set `points` from submitted minutes and `occurredAt` on the server.
+- Team management approach: Require a team name, preserve the submitted name and mascot, and maintain the members array.
+- Leaderboard approach: Sum activity points by team, sort highest first, and assign 1-based ranks.
+- Workout suggestions approach: Resolve the user by email, prefer a workout matching their goal and then recent activity, include a reason, and return 404 for an unknown user.
 
 ## Test plan
 
-Record the commands you run and what each failure means.
+Commands run and what their failures mean:
 
-- Data-tier command: `npm run test:data --prefix octofit-tracker/backend`
-- API command: `npm run test:api --prefix octofit-tracker/backend`
-- Frontend command: `npm test --prefix octofit-tracker/frontend`
-- Backend build command: `npm run build --prefix octofit-tracker/backend`
-- Frontend build command: `npm run build --prefix octofit-tracker/frontend`
+- `npm run test:data --prefix octofit-tracker/backend`: passed 5/5 after schema validation changes. Before the changes, four model-validation tests failed; seed idempotency/preservation passed.
+- `npm run test:api --prefix octofit-tracker/backend`: passed 4/4 after implementing service behavior.
+- `npm test --prefix octofit-tracker/backend`: passed 9/9.
+- `npm test --prefix octofit-tracker/frontend`: passed 15/15 after dependencies were available. The earlier run could not load `dom-accessibility-api` because the install was interrupted; it did not reach frontend assertions.
+- `npm run build --prefix octofit-tracker/backend`: passed.
+- `npm run build --prefix octofit-tracker/frontend`: passed.
+- `node .github/scripts/grade-step.mjs step1-architecture`: passed. The starter-specific `node --test --test-name-pattern="step one requires a completed architecture plan" tests/exercise-validation.test.mjs` assertion expects this repository's plan to remain blank, so it fails after the required decision record is completed; this is not an application contract failure.
